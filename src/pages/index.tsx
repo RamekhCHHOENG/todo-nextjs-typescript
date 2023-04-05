@@ -169,7 +169,7 @@ export default function Home({ todos: initialTodos }: Props) {
             <div
               key={value._id}
               className={styles.todo_container}
-              style={{ height: value.todo.length >= 30 ? 'auto' : '40px' }}
+              style={{ height: value.todo.length >= 55 ? 'auto' : '40px' }}
             >
               <div className={styles.complete_container}>
                 {isToggleComplete && todoId === value._id ? (
