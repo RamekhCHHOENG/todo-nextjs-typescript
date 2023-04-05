@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
 const http: AxiosInstance = axios.create({
-  baseURL: "https://todo-app-api-1454.onrender.com",
+  baseURL: "https://todo-api-typescript.onrender.com",
 });
 
 http.interceptors.response.use(
@@ -15,6 +15,5 @@ http.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 export default http;
