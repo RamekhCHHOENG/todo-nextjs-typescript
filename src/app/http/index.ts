@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
 const http: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3100",
+  baseURL: process.env.BASE_URL || "http://localhost:3100",
 });
 
 http.interceptors.response.use(
