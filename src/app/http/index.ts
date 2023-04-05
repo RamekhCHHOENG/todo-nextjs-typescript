@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
 const http: AxiosInstance = axios.create({
-  baseURL: process.env.BASE_URL || "http://localhost:3100",
+  baseURL: "https://todo-api-typescript.onrender.com",
 });
 
 http.interceptors.response.use(
