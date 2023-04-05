@@ -3,7 +3,7 @@ import styles from '@/styles/Home.module.css'
 import { http } from '@/app'
 import { GetServerSideProps } from 'next'
 import { useState, useCallback } from 'react'
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 
 interface Todo {
   _id: string
@@ -27,6 +27,8 @@ export default function Home({ todos: initialTodos }: Props) {
   const [todoId, setTodoId] = useState<String>('')
   const [busy, setBusy] = useState(false)
   const [isToggleComplete, setIsToggleComplete] = useState(false)
+  const [isSearching, setSearching] = useState(false)
+  const [isDeleting, setDeleting] = useState(false)
   const [q, setQ] = useState('')
 
   const handleChange = useCallback(
@@ -41,13 +43,15 @@ export default function Home({ todos: initialTodos }: Props) {
 
   const handleSearch = useCallback(
     debounce( async (query) => {
+      setSearching(true)
       try {
         const { data } = await http.get('/todos', { params: { q: query } })
         setTodos(data.data)
       } catch (error) {
         console.error(error)
+      } finally {
+        setSearching(false)
       }
-    
     }, 500),
     [http, setTodos]
   )
@@ -70,6 +74,7 @@ export default function Home({ todos: initialTodos }: Props) {
 
   const addTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isEmpty(todo.todo)) return
     setBusy(true)
     try {
       if (todo._id) {
@@ -112,11 +117,15 @@ export default function Home({ todos: initialTodos }: Props) {
   }
 
   const deleteTodo = async (id: string) => {
+    setTodoId(id)
+    setDeleting(true)
     try {
       await http.delete(`/todo/${id}`)
       await getTodos()
     } catch (error) {
       console.error(error)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -153,13 +162,15 @@ export default function Home({ todos: initialTodos }: Props) {
               className={styles.input}
               type='text'
               placeholder='Task to be done...'
-              disabled={busy}
+              disabled={busy || !isEmpty(q)}
               onChange={(e) => handleChange(e)}
               value={todo.todo}
+              name="todo"
+              required
             />
             <button
               className={styles.submit_btn}
-              disabled={busy || !todo.todo}
+              disabled={busy || isEmpty(todo.todo) || !isEmpty(q)}
               type='submit'
             >
               {busy ? 'Loading...' : todo._id ? 'Update' : 'Add'}
@@ -198,12 +209,21 @@ export default function Home({ todos: initialTodos }: Props) {
               >
                 &#9998;
               </button>
-              <button
-                onClick={() => deleteTodo(value._id)}
-                className={styles.remove_todo}
-              >
-                &#10006;
-              </button>
+      
+
+              <div className={styles.complete_container}>
+                {isDeleting && todoId === value._id ? (
+                  <div className={styles.loader} />
+                ) : (
+                  <button
+                  disabled={!!todo._id}
+                  onClick={() => deleteTodo(value._id)}
+                  className={styles.remove_todo}
+                >
+                  &#10006;
+                </button>
+                )}
+              </div>
             </div>
           ))}
           {todos.length === 0 && <h2 className={styles.no_todos}> {q? 'No Result':'No todos'}</h2>}

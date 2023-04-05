@@ -71,6 +71,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow: auto;
 }
 
 .todo_container .edit_todo,
@@ -111,9 +112,15 @@
   outline: none;
   border: none;
   background: transparent;
-  color: #42a5f5;
   font-size: 16px;
   cursor: pointer;
+}
+
+.edit_todo {
+  color: #f68e06;
+}
+.remove_todo {
+  color: #f82121;
 }
 
 .no_todos {
